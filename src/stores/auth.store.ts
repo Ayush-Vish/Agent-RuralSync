@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AUTH_BASE_URL, SERVICE_PROVIDER } from "@/constants";
+import { AUTH_BASE_URL } from "@/constants";
 import axiosInstance from "@/lib/axios";
 import toast from "react-hot-toast";
 import { create } from "zustand";
+import type { User } from "@/types";
 
 interface AuthState {
   isLoggedIn: boolean;
-  user: any | null;
-  setAuth: (isLoggedIn: boolean, user: any | null) => void;
+  user: User | null;
+  setAuth: (isLoggedIn: boolean, user: User | null) => void;
   initialise: () => Promise<boolean>;
   login: (loginData: any) => Promise<boolean>;
   register: (registerData: any) => Promise<boolean>;
