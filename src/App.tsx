@@ -4,7 +4,6 @@ import { useAuthStore } from "./stores/auth.store";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/login";
 import Register from "./pages/register";
-import ProfilePage from "./pages/profile";
 import CookieConsent from "./components/cookie-consent";
 import { ThemeProvider } from "./dark-mode";
 import { ModeToggle } from "./components/toggle";
@@ -32,7 +31,6 @@ function App() {
         <CookieConsent />
         <Routes>
           <Route path="/" element={<BookingDashboard />} />
-          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<Register />} />
         </Routes>

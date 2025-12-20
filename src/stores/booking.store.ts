@@ -3,30 +3,61 @@ import { AGENT_BASE_URL } from "@/constants";
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/axios";
-import type { 
-  Booking, 
-  BookingDetails
-} from "@/types/service";
+import { Booking } from "@/components/BookingDialoge";
 
-// Re-export types for backward compatibility
-export type { Booking, BookingDetails };
+interface Location {
+  type: string
+  coordinates: number[]
+  _id: string
+}
+
+interface Client {
+  _id: string
+  name: string
+  email: string
+}
+
+interface ServiceProvider {
+  _id: string
+  name: string
+  email: string
+}
+
+interface Agent {
+  _id: string
+  name: string
+  email: string
+}
+
+interface BookingDetails {
+  _id: string
+  client: Client
+  serviceProvider: ServiceProvider
+  service: string
+  bookingDate: string
+  bookingTime: string
+  status: "Pending" | "Confirmed" | "In Progress" | "Completed" | "Cancelled" | "Not Assigned"
+  paymentStatus: 'Paid' | 'Unpaid'
+  location: Location
+  extraTasks: any[] // Assuming extraTasks is an array, update if needed
+  createdAt: string
+  updatedAt: string
+  agent: Agent
+}
 
 interface DashboardState {
   totalBookings: number;
   pendingBookings: Booking[];
   inProgressBookings: Booking[];
   completedBookings: Booking[];
-  currentBooking: BookingDetails | null;
-  isLoading: boolean;
-  isBookingLoading: boolean;
-  error: string | null;
+  currentBooking: BookingDetails | null;  // Updated type
   fetchBooking: (bookingId: string) => Promise<void>;
   fetchDashboardData: () => Promise<void>;
   updateBookingStatus: (bookingId: string, status: string) => Promise<void>;
   addExtraTask: (bookingId: string, task: { description: string; extraPrice: string }) => Promise<void>;
   updateExtraTask: (bookingId: string, taskId: string, task: { description: string; extraPrice: string }) => Promise<void>;
   deleteExtraTask: (bookingId: string, taskId: string) => Promise<void>;
-  markBookingAsPaid: (bookingId: string, method: string) => Promise<void>;
+  markBookingAsPaid: (bookingId: string) => Promise<void>;
 }
 export const useDashboardStore = create<DashboardState>((set, get) => ({
   totalBookings: 0,
@@ -34,47 +65,47 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   inProgressBookings: [],
   completedBookings: [],
   currentBooking: null,
-  isLoading: false,
-  isBookingLoading: false,
-  error: null,
+
 
   fetchDashboardData: async () => {
-  try {
-    set({ isLoading: true, error: null });
-    const response = await axiosInstance.get(AGENT_BASE_URL + "dashboard");
-    const data = await response.data;
-    // Accessing the nested 'data' from our standard API response
-    console.log(data);
-    set({isLoading: false });
-    const { stats, bookings } = data.data;
+    try {
+      
+      const response = await axiosInstance.get("http://localhost:5000/agent/dashboard");
+      if(!response.data){
+        toast.error("Failed to fetch dashboard data");
+        return;
+      }
+      console.log("snsdkf")
+      console.log(response.data);
+      console.log(await response.data); 
 
-    set({
-      totalBookings: stats.total,
-      pendingBookings: bookings.pending,       // Array
-      inProgressBookings: bookings.inProgress, // Array
-      completedBookings: bookings.completed,   // Array
-      isLoading: false,
-    });
-  } catch (error: any) {
-    set({ isLoading: false, error: error?.message || "Failed to fetch dashboard data" });
-    toast.error("Failed to fetch dashboard data");
-  }
-},
+      const { totalBookings, pendingBookings, inProgressBookings, completedBookings } = await  response.data;
+
+      set({
+        totalBookings,
+        pendingBookings,
+        inProgressBookings,
+        completedBookings,
+      });
+
+      toast.success("Dashboard data fetched successfully");
+
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      toast.error("An error occurred while loading dashboard data");
+    }
+  },
   fetchBooking : async (bookingId: string) =>  {
     try {
-      set({ isBookingLoading: true, error: null });
       const response = await axiosInstance.get(AGENT_BASE_URL + `get/${bookingId}`);
       if(!response.data){
-        set({ isBookingLoading: false, error: "Failed to fetch booking data" });
         toast.error("Failed to fetch booking data");
         return;
       }
-      console.log("Fetched booking data:", response.data.booking);
-      set({ currentBooking: response.data.booking, isBookingLoading: false, error: null });
+      set({currentBooking: response.data.booking});
 
     } catch (error) {
       console.error("Failed to fetch booking data:", error);
-      set({ isBookingLoading: false, error: "An error occurred while loading booking data" });
       toast.error("An error occurred while loading booking data");
     }
   },
@@ -167,14 +198,23 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       toast.error("An error occurred while deleting extra task");
     }
   },
-  markBookingAsPaid: async (bookingId: string, method: string = "CASH") => {
+  markBookingAsPaid: async (bookingId: string) => {
     try {
-        const response = await axiosInstance.post(`${AGENT_BASE_URL}booking/${bookingId}/pay`, { method });
-        set({ currentBooking: response.data.booking });
-        toast.success(`Payment recorded via ${method}`);
-        await get().fetchDashboardData();
+      const response = await axiosInstance.post(
+        `${AGENT_BASE_URL}booking/${bookingId}/pay`
+      );
+      
+      if (!response.data) {
+        toast.error("Failed to mark booking as paid");
+        return;
+      }
+
+      // Update the current booking's payment status
+      set({ currentBooking: response.data.booking });
+      toast.success("Booking marked as paid successfully");
     } catch (error) {
-        toast.error("Failed to record payment");
+      console.error("Failed to mark booking as paid:", error);
+      toast.error("An error occurred while marking booking as paid");
     }
-}
+  },
 }));
