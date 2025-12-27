@@ -6,7 +6,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { useOrgStore } from "@/stores/org.store";
+import { useOrgStore, type OrganizationAPI } from "@/stores/org.store.ts";
 import { Building2, Users, Briefcase, Calendar } from "lucide-react";
 
 export default function SidebarMenuComponent({
@@ -14,7 +14,7 @@ export default function SidebarMenuComponent({
 }: {
   onSectionChange: (section: string) => void;
 }) {
-  const orgDetails = useOrgStore((state) => state.orgDetails);
+  const orgDetails = useOrgStore((state: { orgDetails: OrganizationAPI | null }) => state.orgDetails);
 
   return (
     <Sidebar className="">

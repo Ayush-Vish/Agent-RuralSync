@@ -1,5 +1,14 @@
-export const AUTH_BASE_URL = "http://localhost:5001/auth/"
-export const SHOPKEEPER_BASE_URL = "http://localhost:5003/shopkeeper/";
-export const AGENT_BASE_URL = "http://localhost:5000/agent/";
-export const AUDIT_LOGS_BASE_URL = "http://localhost:5006/audit-logs/";
+// API Base URL - Uses environment variable or defaults to localhost
+const API_BASE = import.meta.env.MODE ==="production"?
+    "/api" :"http://localhost:5000/api";
+export const AUTH_BASE_URL = `${API_BASE}/auth/`;
+export const SHOPKEEPER_BASE_URL = `${API_BASE}/provider/`;
+export const AGENT_BASE_URL = `${API_BASE}/agent/`;
+export const AUDIT_LOGS_BASE_URL = `${API_BASE}/audit-logs/`;
 export const SERVICE_PROVIDER = "SERVICE_PROVIDER";
+
+
+// some Change
+// force change
+// final sanity test
+// test again
