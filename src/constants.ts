@@ -7,8 +7,3 @@ export const AGENT_BASE_URL = `${API_BASE}/agent/`;
 export const AUDIT_LOGS_BASE_URL = `${API_BASE}/audit-logs/`;
 export const SERVICE_PROVIDER = "SERVICE_PROVIDER";
 
-
-// some Change
-// force change
-// final sanity test
-// test again

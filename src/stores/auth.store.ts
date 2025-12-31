@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { create } from "zustand";
 import type { User } from "@/types";
 
-const BASE_URL = process.env.VITE_API_URL || "http://localhost:5000/api";
 
 interface AuthState {
   isLoggedIn: boolean;
