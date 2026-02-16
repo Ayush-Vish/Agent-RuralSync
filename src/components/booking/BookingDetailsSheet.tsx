@@ -39,6 +39,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import MapView from "@/components/map/MapView";
+import LocationSharing from "@/components/booking/LocationSharing";
 import { useDashboardStore } from "@/stores/booking.store";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { BookingDialogProps, ExtraTask } from "@/types";
@@ -307,6 +308,17 @@ export default function BookingDetailsSheet({ bookingId, onClose }: BookingDialo
               </section>
 
               <Separator />
+
+              {/* Live Location Sharing */}
+              {(booking.status === "IN_PROGRESS" || booking.status === "CONFIRMED") && (
+                <>
+                  <LocationSharing
+                    bookingId={bookingId!}
+                    bookingAddress={booking.address}
+                  />
+                  <Separator />
+                </>
+              )}
 
               {/* Extra Tasks */}
               <section className="space-y-3">
