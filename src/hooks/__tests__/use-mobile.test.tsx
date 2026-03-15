@@ -6,7 +6,7 @@ describe('useIsMobile', () => {
     let matchMedia: any
 
     beforeEach(() => {
-        matchMedia = vi.fn().mockImplementation((query) => ({
+        matchMedia = vi.fn().mockImplementation((query: string) => ({
             matches: false,
             media: query,
             onchange: null,
@@ -37,7 +37,7 @@ describe('useIsMobile', () => {
 
     it('should return true for mobile', () => {
         window.innerWidth = 500
-        matchMedia.mockImplementation((query) => ({
+        matchMedia.mockImplementation((query: string) => ({
             matches: true,
             media: query,
             onchange: null,

@@ -21,10 +21,16 @@ describe('DashboardHeader', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(useAuthStore).mockImplementation((selector) => selector({
-            user: { name: 'Test Agent', email: 'agent@example.com', profileImage: 'img.jpg' },
-            logout: mockLogout
-        }))
+        vi.mocked(useAuthStore).mockImplementation((selector: any) => selector({
+            user: { name: 'Test Agent', email: 'agent@example.com', profileImage: 'img.jpg' } as any,
+            logout: mockLogout,
+            isLoggedIn: true,
+            setAuth: vi.fn(),
+            initialise: vi.fn(),
+            login: vi.fn(),
+            googleLogin: vi.fn(),
+            register: vi.fn(),
+        } as any))
     })
 
     it('should render header with user info', () => {

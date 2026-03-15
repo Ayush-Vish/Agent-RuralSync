@@ -16,11 +16,18 @@ const mockGoogleLogin = vi.fn()
 describe('RegisterPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(useAuthStore).mockImplementation((selector) => {
+        vi.mocked(useAuthStore).mockImplementation((selector: any) => {
             return selector({
                 register: mockRegister,
-                googleLogin: mockGoogleLogin
-            })
+                googleLogin: mockGoogleLogin,
+                // Required AuthState fields
+                isLoggedIn: false,
+                user: null,
+                setAuth: vi.fn(),
+                initialise: vi.fn(),
+                login: vi.fn(),
+                logout: vi.fn(),
+            } as any)
         })
     })
 
@@ -50,7 +57,7 @@ describe('RegisterPage', () => {
 
         mockRegister.mockResolvedValue(true)
 
-        fireEvent.click(screen.getByRole('button', { name: /^Sign Up$/i })) // The button text might be "Sign Up" inside the button
+        fireEvent.click(screen.getByRole('button', { name: /^Sign Up$/i }))
 
         await waitFor(() => {
             expect(mockRegister).toHaveBeenCalledWith({

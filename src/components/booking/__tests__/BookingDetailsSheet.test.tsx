@@ -35,16 +35,25 @@ describe('BookingDetailsSheet', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(useDashboardStore).mockImplementation((selector) => {
-            const state = {
+        vi.mocked(useDashboardStore).mockImplementation((selector: any) => {
+            const state: any = {
                 currentBooking: defaultBooking,
                 fetchBooking: mockFetchBooking,
                 updateBookingStatus: mockUpdateStatus,
                 addExtraTask: mockAddTask,
                 deleteExtraTask: mockDeleteTask,
                 markBookingAsPaid: mockMarkPaid,
+                totalBookings: 0,
+                pendingBookings: [],
+                inProgressBookings: [],
+                completedBookings: [],
+                isLoading: false,
+                isBookingLoading: false,
+                error: null,
+                fetchDashboardData: vi.fn(),
+                updateExtraTask: vi.fn(),
             }
-            return selector(state)
+            return selector ? selector(state) : state
         })
     })
 

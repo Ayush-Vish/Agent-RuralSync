@@ -17,19 +17,19 @@ describe('CookieConsent', () => {
     })
 
     it('should render if no consent cookie exists', () => {
-        vi.mocked(Cookies.get).mockReturnValue(undefined)
+        vi.mocked(Cookies.get).mockReturnValue(undefined as any)
         render(<CookieConsent />)
         expect(screen.getByText('Cookie Consent')).toBeInTheDocument()
     })
 
     it('should not render if consent cookie exists', () => {
-        vi.mocked(Cookies.get).mockReturnValue('true')
+        vi.mocked(Cookies.get).mockReturnValue('true' as any)
         render(<CookieConsent />)
         expect(screen.queryByText('Cookie Consent')).not.toBeInTheDocument()
     })
 
     it('should set cookie and close on Accept', () => {
-        vi.mocked(Cookies.get).mockReturnValue(undefined)
+        vi.mocked(Cookies.get).mockReturnValue(undefined as any)
         render(<CookieConsent />)
 
         fireEvent.click(screen.getByText('Accept'))
@@ -38,7 +38,7 @@ describe('CookieConsent', () => {
     })
 
     it('should set cookie and close on Decline', () => {
-        vi.mocked(Cookies.get).mockReturnValue(undefined)
+        vi.mocked(Cookies.get).mockReturnValue(undefined as any)
         render(<CookieConsent />)
 
         fireEvent.click(screen.getByText('Decline'))

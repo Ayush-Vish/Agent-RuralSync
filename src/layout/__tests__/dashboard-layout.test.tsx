@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import BookingDashboard from '../dashboard-layout'
 import { useDashboardStore } from '@/stores/booking.store'
@@ -18,12 +18,32 @@ vi.mock('@/components/dashboard', () => ({
     ErrorState: ({ onRetry }: any) => <button onClick={onRetry}>Error Retry</button>
 }))
 
+// Base empty DashboardState for partial mocks
+const baseDashboardState: any = {
+    totalBookings: 0,
+    pendingBookings: [],
+    inProgressBookings: [],
+    completedBookings: [],
+    isLoading: false,
+    isBookingLoading: false,
+    error: null,
+    fetchDashboardData: vi.fn(),
+    fetchBooking: vi.fn(),
+    updateBookingStatus: vi.fn(),
+    addExtraTask: vi.fn(),
+    updateExtraTask: vi.fn(),
+    deleteExtraTask: vi.fn(),
+    markBookingAsPaid: vi.fn(),
+    currentBooking: null,
+}
+
 describe('BookingDashboard', () => {
     const mockFetchData = vi.fn()
 
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(useDashboardStore).mockImplementation((selector) => selector({
+        vi.mocked(useDashboardStore).mockImplementation((selector: any) => selector({
+            ...baseDashboardState,
             totalBookings: 10,
             pendingBookings: [],
             inProgressBookings: [],
@@ -48,7 +68,8 @@ describe('BookingDashboard', () => {
     })
 
     it('should show skeleton when loading', () => {
-        vi.mocked(useDashboardStore).mockImplementation((selector) => selector({
+        vi.mocked(useDashboardStore).mockImplementation((selector: any) => selector({
+            ...baseDashboardState,
             isLoading: true,
             error: null,
             fetchDashboardData: mockFetchData
@@ -63,7 +84,8 @@ describe('BookingDashboard', () => {
     })
 
     it('should show error state', () => {
-        vi.mocked(useDashboardStore).mockImplementation((selector) => selector({
+        vi.mocked(useDashboardStore).mockImplementation((selector: any) => selector({
+            ...baseDashboardState,
             isLoading: false,
             error: 'Failed to load',
             fetchDashboardData: mockFetchData

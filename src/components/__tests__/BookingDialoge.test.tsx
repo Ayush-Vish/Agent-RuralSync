@@ -33,17 +33,27 @@ describe('BookingDialog', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        // Default store mock implementation
-        vi.mocked(useDashboardStore).mockImplementation((selector) => {
-            const state = {
+        // Default store mock implementation — use `as any` to avoid strict partial type errors
+        vi.mocked(useDashboardStore).mockImplementation((selector: any) => {
+            const state: any = {
                 currentBooking: defaultBooking,
                 fetchBooking: mockFetchBooking,
                 updateBookingStatus: mockUpdateStatus,
                 addExtraTask: mockAddTask,
                 deleteExtraTask: mockDeleteTask,
                 markBookingAsPaid: mockMarkPaid,
+                // Required DashboardState fields
+                totalBookings: 0,
+                pendingBookings: [],
+                inProgressBookings: [],
+                completedBookings: [],
+                isLoading: false,
+                isBookingLoading: false,
+                error: null,
+                fetchDashboardData: vi.fn(),
+                updateExtraTask: vi.fn(),
             }
-            return selector(state)
+            return selector ? selector(state) : state
         })
     })
 
@@ -60,12 +70,6 @@ describe('BookingDialog', () => {
     it('should display booking details', async () => {
         render(<BookingDialog bookingId="123" onClose={vi.fn()} />)
 
-        // Wait for loading to finish (simulated by store providing data immediately but component has local loading state)
-        // Actually component sets loading=true then calls fetch. async fetch waits.
-        // We need to simulate fetch promise resolving.
-        // Since we mocked fetchBooking to just return void/promise, we rely on component state updates.
-        // The component awaits fetchBooking.
-
         await waitFor(() => {
             expect(screen.getByText('John Doe')).toBeInTheDocument()
             expect(screen.getByText('Cleaning')).toBeInTheDocument()
@@ -77,9 +81,6 @@ describe('BookingDialog', () => {
         render(<BookingDialog bookingId="123" onClose={vi.fn()} />)
 
         await waitFor(() => screen.getByText('Booking Status'))
-
-        // Trigger select (this is hard with radix-ui in tests without user-event, but we can try basic fireEvent or finding trigger)
-        // Radix UI select is complex to test. skipping interaction detail for now, just checking presence.
 
         const statusLabel = screen.getByText('Booking Status')
         expect(statusLabel).toBeInTheDocument()

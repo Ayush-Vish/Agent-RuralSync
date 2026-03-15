@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import ProfilePage from '../profile'
 import { useAuthStore } from '@/stores/auth.store'
@@ -9,18 +9,30 @@ vi.mock('@/stores/auth.store')
 
 const mockLogout = vi.fn()
 
+// Helper to create a full AuthState mock with minimal overrides
+const mockAuthStore = (overrides: Record<string, any>) => {
+    vi.mocked(useAuthStore).mockImplementation((selector: any) => {
+        return selector({
+            isLoggedIn: false,
+            user: null,
+            setAuth: vi.fn(),
+            initialise: vi.fn(),
+            login: vi.fn(),
+            googleLogin: vi.fn(),
+            register: vi.fn(),
+            logout: mockLogout,
+            ...overrides,
+        } as any)
+    })
+}
+
 describe('ProfilePage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
     })
 
     it('should show user not found if no user', () => {
-        vi.mocked(useAuthStore).mockImplementation((selector) => {
-            return selector({
-                user: null,
-                logout: mockLogout
-            })
-        })
+        mockAuthStore({ user: null })
 
         render(
             <BrowserRouter>
@@ -33,18 +45,15 @@ describe('ProfilePage', () => {
 
     it('should render user profile when user exists', () => {
         const mockUser = {
+            _id: 'user-1',
             name: 'Profile User',
             email: 'profile@example.com',
-            role: 'AGENT',
-            isVerified: true
+            role: 'AGENT' as const,
+            isVerified: true,
+            createdAt: new Date().toISOString(),
         }
 
-        vi.mocked(useAuthStore).mockImplementation((selector) => {
-            return selector({
-                user: mockUser,
-                logout: mockLogout
-            })
-        })
+        mockAuthStore({ user: mockUser })
 
         render(
             <BrowserRouter>
@@ -57,13 +66,15 @@ describe('ProfilePage', () => {
     })
 
     it('should handle logout', async () => {
-        const mockUser = { name: 'User' }
-        vi.mocked(useAuthStore).mockImplementation((selector) => {
-            return selector({
-                user: mockUser,
-                logout: mockLogout
-            })
-        })
+        const mockUser = {
+            _id: 'user-2',
+            name: 'User',
+            email: 'user@example.com',
+            role: 'AGENT' as const,
+            createdAt: new Date().toISOString(),
+        }
+
+        mockAuthStore({ user: mockUser })
 
         render(
             <BrowserRouter>

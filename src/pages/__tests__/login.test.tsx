@@ -16,11 +16,18 @@ const mockGoogleLogin = vi.fn()
 describe('LoginPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(useAuthStore).mockImplementation((selector) => {
+        vi.mocked(useAuthStore).mockImplementation((selector: any) => {
             return selector({
                 login: mockLogin,
-                googleLogin: mockGoogleLogin
-            })
+                googleLogin: mockGoogleLogin,
+                // Required AuthState fields
+                isLoggedIn: false,
+                user: null,
+                setAuth: vi.fn(),
+                initialise: vi.fn(),
+                register: vi.fn(),
+                logout: vi.fn(),
+            } as any)
         })
     })
 
